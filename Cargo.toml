@@ -6,6 +6,7 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/Icerath/prepl"
 keywords = ["terminal", "cli", "input"]
 documentation = "https://docs.rs/prepl/"
+description = "A very barebones REPL library"
 
 [dependencies]
 crossterm = "0.29.0"
