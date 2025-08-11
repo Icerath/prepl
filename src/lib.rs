@@ -103,7 +103,11 @@ impl Repl {
                 KeyCode::Enter => {
                     writeln!(stdout)?;
                     let line = self.finish_line();
-                    self.history.append(&mut self.future);
+                    if !self.future.is_empty() {
+                        self.history.push(line.clone());
+                    }
+                    self.history
+                        .extend(self.future.drain(..).rev().filter(|line| !line.trim().is_empty()));
                     if !line.trim().is_empty() {
                         self.history.push(line.clone());
                     }
