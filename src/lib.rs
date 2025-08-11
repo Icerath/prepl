@@ -67,11 +67,9 @@ impl Repl {
                 }
                 KeyCode::Right if ctrl => {
                     let trimmed = self.rhs.trim_start();
-                    let till_ws = trimmed
-                        .find(char::is_whitespace)
-                        .unwrap_or(self.rhs.len().saturating_sub(1));
+                    let till_ws = trimmed.find(char::is_whitespace).unwrap_or(trimmed.len());
                     let till_ws = till_ws + (self.rhs.len() - trimmed.len());
-                    if till_ws >= self.rhs.len() {
+                    if till_ws > self.rhs.len() {
                         continue;
                     }
                     let mut rhs = self.rhs.split_off(till_ws);
