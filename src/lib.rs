@@ -103,7 +103,9 @@ impl Repl {
                 KeyCode::Enter => {
                     writeln!(stdout)?;
                     let line = self.finish_line();
-                    self.history.push(line.clone());
+                    if !line.trim().is_empty() {
+                        self.history.push(line.clone());
+                    }
                     break Ok(line);
                 }
                 KeyCode::Char('c') if ctrl => std::process::exit(0),
