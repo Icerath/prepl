@@ -57,9 +57,6 @@ impl Repl {
                 KeyCode::Left if ctrl => {
                     let trimmed = self.lhs.trim_end_matches(not_word_char);
                     let till_ws = trimmed.rfind(not_word_char).map(|i| i + 1).unwrap_or(0);
-                    if till_ws >= self.lhs.len() {
-                        continue;
-                    }
                     let rhs = self.lhs.split_off(till_ws);
                     self.rhs.insert_str(0, &rhs);
                     self.render(&stdout)?;
@@ -73,9 +70,6 @@ impl Repl {
                     let trimmed = self.rhs.trim_start_matches(not_word_char);
                     let till_ws = trimmed.find(not_word_char).unwrap_or(trimmed.len());
                     let till_ws = till_ws + (self.rhs.len() - trimmed.len());
-                    if till_ws > self.rhs.len() {
-                        continue;
-                    }
                     let mut rhs = self.rhs.split_off(till_ws);
                     mem::swap(&mut rhs, &mut self.rhs);
                     self.lhs.push_str(&rhs);
@@ -92,9 +86,6 @@ impl Repl {
                 KeyCode::Char('w') | KeyCode::Backspace if ctrl => {
                     let trimmed = self.lhs.trim_end_matches(not_word_char);
                     let till_ws = trimmed.rfind(not_word_char).map(|i| i + 1).unwrap_or(0);
-                    if till_ws >= self.lhs.len() {
-                        continue;
-                    }
                     self.lhs.truncate(till_ws);
                     self.render(&stdout)?;
                 }
