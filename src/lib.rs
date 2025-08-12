@@ -4,7 +4,7 @@ use std::{
 };
 
 use crossterm::{
-    cursor::MoveToColumn,
+    cursor::{MoveTo, MoveToColumn},
     event::{Event, KeyCode, KeyModifiers},
     execute,
     style::Print,
@@ -26,6 +26,10 @@ impl Repl {
         let output = self.read_line_interal();
         disable_raw_mode()?;
         output
+    }
+    /// Clears the entire terminal (including history)
+    pub fn clear(&mut self) -> io::Result<()> {
+        execute!(stdout(), Clear(ClearType::All), Clear(ClearType::Purge), MoveTo(0, 0))
     }
     fn read_line_interal(&mut self) -> io::Result<String> {
         let mut stdout = stdout();
