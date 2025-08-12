@@ -51,8 +51,8 @@ impl Repl {
                     self.render(&stdout)?;
                 }
                 KeyCode::Left if ctrl => {
-                    let trimmed = self.lhs.trim_end();
-                    let till_ws = trimmed.rfind(char::is_whitespace).map(|i| i + 1).unwrap_or(0);
+                    let trimmed = self.lhs.trim_end_matches(not_word_char);
+                    let till_ws = trimmed.rfind(not_word_char).map(|i| i + 1).unwrap_or(0);
                     if till_ws >= self.lhs.len() {
                         continue;
                     }
@@ -66,8 +66,8 @@ impl Repl {
                     self.render(&stdout)?;
                 }
                 KeyCode::Right if ctrl => {
-                    let trimmed = self.rhs.trim_start();
-                    let till_ws = trimmed.find(char::is_whitespace).unwrap_or(trimmed.len());
+                    let trimmed = self.rhs.trim_start_matches(not_word_char);
+                    let till_ws = trimmed.find(not_word_char).unwrap_or(trimmed.len());
                     let till_ws = till_ws + (self.rhs.len() - trimmed.len());
                     if till_ws > self.rhs.len() {
                         continue;
@@ -86,8 +86,8 @@ impl Repl {
                     self.render(&stdout)?;
                 }
                 KeyCode::Char('w') | KeyCode::Backspace if ctrl => {
-                    let trimmed = self.lhs.trim_end();
-                    let till_ws = trimmed.rfind(char::is_whitespace).map(|i| i + 1).unwrap_or(0);
+                    let trimmed = self.lhs.trim_end_matches(not_word_char);
+                    let till_ws = trimmed.rfind(not_word_char).map(|i| i + 1).unwrap_or(0);
                     if till_ws >= self.lhs.len() {
                         continue;
                     }
@@ -136,4 +136,8 @@ impl Repl {
             MoveToColumn(self.lhs.len() as u16)
         )
     }
+}
+
+fn not_word_char(c: char) -> bool {
+    !c.is_ascii_alphanumeric()
 }
