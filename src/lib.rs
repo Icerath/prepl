@@ -122,7 +122,10 @@ impl Repl {
                 }
                 return Ok(Some(line));
             }
-            KeyCode::Char('c') if ctrl => std::process::exit(0),
+            KeyCode::Char('c') if ctrl => {
+                _ = disable_raw_mode();
+                std::process::exit(0);
+            }
             KeyCode::Char(c) if !alt && !ctrl => {
                 self.lhs.push(c);
                 self.render(stdout)?;
