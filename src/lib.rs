@@ -84,12 +84,11 @@ impl Repl {
                 self.render(stdout)?;
             }
             KeyCode::Right => {
-                if self.rhs.is_empty() {
-                    return Ok(None);
+                if !self.rhs.is_empty() {
+                    let c = self.rhs.remove(0);
+                    self.lhs.push(c);
+                    self.render(stdout)?;
                 }
-                let c = self.rhs.remove(0);
-                self.lhs.push(c);
-                self.render(stdout)?;
             }
             KeyCode::Char('w') | KeyCode::Backspace if ctrl => {
                 _ = self.jump_word_left();
