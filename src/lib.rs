@@ -123,7 +123,7 @@ impl Repl {
                 return Ok(Some(line));
             }
             KeyCode::Char('c') if ctrl => std::process::exit(0),
-            KeyCode::Char(c) => {
+            KeyCode::Char(c) if !alt && !ctrl => {
                 self.lhs.push(c);
                 self.render(stdout)?;
             }
