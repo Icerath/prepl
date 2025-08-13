@@ -26,7 +26,7 @@ impl Repl {
     pub fn read_line(&mut self) -> io::Result<String> {
         // disable raw mode even if read_line_internal errors
         enable_raw_mode()?;
-        let output = self.read_line_interal();
+        let output = self.read_line_internal();
         disable_raw_mode()?;
         output
     }
@@ -34,7 +34,7 @@ impl Repl {
     pub fn clear(&mut self) -> io::Result<()> {
         execute!(stdout(), Clear(ClearType::All), Clear(ClearType::Purge), MoveTo(0, 0))
     }
-    fn read_line_interal(&mut self) -> io::Result<String> {
+    fn read_line_internal(&mut self) -> io::Result<String> {
         let stdout = stdout();
         loop {
             let Event::Key(event) = crossterm::event::read()? else { continue };
