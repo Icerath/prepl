@@ -8,5 +8,9 @@ keywords = ["terminal", "cli", "input"]
 documentation = "https://docs.rs/prepl/"
 description = "A very barebones REPL library"
 
+[lints.clippy]
+pedantic = { priority = -1, level = "warn" }
+missing_errors_doc = "allow"
+
 [dependencies]
 crossterm = "0.29.0"

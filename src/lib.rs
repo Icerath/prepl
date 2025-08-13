@@ -50,7 +50,7 @@ impl Repl {
     ) -> io::Result<Option<String>> {
         if !event.is_press() {
             return Ok(None);
-        };
+        }
         let ctrl = event.modifiers.contains(KeyModifiers::CONTROL);
         let alt = event.modifiers.contains(KeyModifiers::ALT);
         match event.code {
@@ -90,13 +90,13 @@ impl Repl {
                     self.render(stdout)?;
                 }
             }
-            KeyCode::Char('h') | KeyCode::Char('w') | KeyCode::Backspace if ctrl => {
+            KeyCode::Char('h' | 'w') | KeyCode::Backspace if ctrl => {
                 _ = self.jump_word_left();
                 self.render(stdout)?;
             }
             KeyCode::Backspace => {
                 if self.lhs.pop().is_some() {
-                    self.render(stdout)?
+                    self.render(stdout)?;
                 }
             }
             KeyCode::Char('d') if alt => {
@@ -141,7 +141,7 @@ impl Repl {
     #[must_use]
     fn jump_word_left(&mut self) -> String {
         let trimmed = self.lhs.trim_end_matches(not_word_char);
-        let end = trimmed.rfind(not_word_char).map(|i| i + 1).unwrap_or(0);
+        let end = trimmed.rfind(not_word_char).map_or(0, |i| i + 1);
         self.lhs.split_off(end)
     }
     #[must_use]
@@ -160,6 +160,7 @@ impl Repl {
         self.rhs.clear();
         line
     }
+    #[expect(clippy::cast_possible_truncation)]
     fn render(&self, mut stdout: impl Write) -> io::Result<()> {
         execute!(
             stdout,
