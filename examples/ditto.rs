@@ -5,5 +5,8 @@ fn main() -> io::Result<()> {
     loop {
         let line = repl.read_line()?;
         println!("{line}");
+        if line.trim() == "clear" {
+            repl.clear()?;
+        }
     }
 }
