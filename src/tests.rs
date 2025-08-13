@@ -36,6 +36,6 @@ fn backspace() {
     repl.move_left(2);
     repl.e(KeyCode::Backspace);
     repl.move_right(3);
-    repl.e(KeyCode::Backspace);
-    assert_eq!(repl.finish_line(), "Helo,orld");
+    repl.e(KeyCode::Delete);
+    assert_eq!(repl.finish_line(), "Helo,Wrld");
 }

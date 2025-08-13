@@ -52,6 +52,7 @@ impl Repl {
             return Ok(None);
         };
         let ctrl = event.modifiers.contains(KeyModifiers::CONTROL);
+        let alt = event.modifiers.contains(KeyModifiers::ALT);
         match event.code {
             KeyCode::Up => {
                 let Some(new) = self.history.pop() else { return Ok(None) };
@@ -68,10 +69,8 @@ impl Repl {
                 self.render(stdout)?;
             }
             KeyCode::Left if ctrl => {
-                let trimmed = self.lhs.trim_end_matches(not_word_char);
-                let till_ws = trimmed.rfind(not_word_char).map(|i| i + 1).unwrap_or(0);
-                let rhs = self.lhs.split_off(till_ws);
-                self.rhs.insert_str(0, &rhs);
+                let word = self.jump_word_left();
+                self.rhs.insert_str(0, &word);
                 self.render(stdout)?;
             }
             KeyCode::Left => {
@@ -80,12 +79,8 @@ impl Repl {
                 self.render(stdout)?;
             }
             KeyCode::Right if ctrl => {
-                let trimmed = self.rhs.trim_start_matches(not_word_char);
-                let till_ws = trimmed.find(not_word_char).unwrap_or(trimmed.len());
-                let till_ws = till_ws + (self.rhs.len() - trimmed.len());
-                let mut rhs = self.rhs.split_off(till_ws);
-                mem::swap(&mut rhs, &mut self.rhs);
-                self.lhs.push_str(&rhs);
+                let word = self.jump_word_right();
+                self.lhs.push_str(&word);
                 self.render(stdout)?;
             }
             KeyCode::Right => {
@@ -97,14 +92,23 @@ impl Repl {
                 self.render(stdout)?;
             }
             KeyCode::Char('w') | KeyCode::Backspace if ctrl => {
-                let trimmed = self.lhs.trim_end_matches(not_word_char);
-                let till_ws = trimmed.rfind(not_word_char).map(|i| i + 1).unwrap_or(0);
-                self.lhs.truncate(till_ws);
+                _ = self.jump_word_left();
                 self.render(stdout)?;
             }
             KeyCode::Backspace => {
-                let Some(_) = self.lhs.pop() else { return Ok(None) };
-                self.render(stdout)?
+                if self.lhs.pop().is_some() {
+                    self.render(stdout)?
+                }
+            }
+            KeyCode::Char('d') if alt => {
+                _ = self.jump_word_right();
+                self.render(stdout)?;
+            }
+            KeyCode::Delete => {
+                if !self.rhs.is_empty() {
+                    self.rhs.remove(0);
+                    self.render(stdout)?;
+                }
             }
             KeyCode::Enter => {
                 writeln!(stdout)?;
@@ -127,6 +131,22 @@ impl Repl {
             _ => {}
         }
         Ok(None)
+    }
+    #[must_use]
+    fn jump_word_left(&mut self) -> String {
+        let trimmed = self.lhs.trim_end_matches(not_word_char);
+        let end = trimmed.rfind(not_word_char).map(|i| i + 1).unwrap_or(0);
+        self.lhs.split_off(end)
+    }
+    #[must_use]
+    fn jump_word_right(&mut self) -> String {
+        let trimmed = self.rhs.trim_start_matches(not_word_char);
+        let end = trimmed.find(not_word_char).unwrap_or(trimmed.len());
+        let end = end + (self.rhs.len() - trimmed.len());
+        // split_off_start
+        let word = self.rhs[..end].to_string();
+        self.rhs.drain(..end);
+        word
     }
     fn finish_line(&mut self) -> String {
         let mut line = mem::take(&mut self.lhs);
