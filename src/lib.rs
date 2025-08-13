@@ -90,7 +90,7 @@ impl Repl {
                     self.render(stdout)?;
                 }
             }
-            KeyCode::Char('w') | KeyCode::Backspace if ctrl => {
+            KeyCode::Char('h') | KeyCode::Char('w') | KeyCode::Backspace if ctrl => {
                 _ = self.jump_word_left();
                 self.render(stdout)?;
             }
@@ -103,6 +103,10 @@ impl Repl {
                 _ = self.jump_word_right();
                 self.render(stdout)?;
             }
+            KeyCode::Delete if ctrl => {
+                _ = self.jump_word_right();
+                self.render(stdout)?;
+            }
             KeyCode::Delete => {
                 if !self.rhs.is_empty() {
                     self.rhs.remove(0);
@@ -110,7 +114,7 @@ impl Repl {
                 }
             }
             KeyCode::Enter => {
-                writeln!(stdout)?;
+                execute!(stdout, Print("\n"), MoveToColumn(0))?;
                 let line = self.finish_line();
                 if !self.future.is_empty() {
                     self.history.push(line.clone());
